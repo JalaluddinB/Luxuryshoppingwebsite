@@ -1,11 +1,11 @@
 /* Luxury Shopping Website Styles */
 
 :root {
-    --primary-color: #2c3e50;
+    --primary-color: #c0392b;
     --secondary-color: #e74c3c;
     --accent-color: #f39c12;
     --luxury-gold: #d4af37;
-    --dark-gray: #34495e;
+    --dark-gray: #a93226;
     --light-gray: #ecf0f1;
 }
 
@@ -13,11 +13,13 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: var(--dark-gray);
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
 }
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-gray) 100%);
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
     position: relative;
     overflow: hidden;
 }
@@ -101,6 +103,7 @@ body {
 .card-header {
     background-color: var(--primary-color);
     border-bottom: none;
+    color: white;
 }
 
 /* Footer */
@@ -128,6 +131,13 @@ footer h5 {
 }
 
 /* Loading animation */
+main {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    margin: 20px 0;
+    padding: 20px;
+}
+
 .loading {
     display: inline-block;
     width: 20px;
@@ -153,7 +163,7 @@ footer h5 {
 
 /* Admin panel styling */
 .stats-card {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-gray) 100%);
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
     color: white;
     border-radius: 10px;
     padding: 1.5rem;
