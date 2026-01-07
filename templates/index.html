@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Luxury Shopping - Home{% endblock %}
+
+{% block content %}
+<div class="hero-section bg-gradient text-white py-5 mb-5">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4">Welcome to Luxury Shopping</h1>
+        <p class="lead mb-4">Discover exclusive luxury items and premium products</p>
+        <a href="#products" class="btn btn-primary btn-lg">Shop Now</a>
+    </div>
+</div>
+
+<div class="container" id="products">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Featured Products</h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 product-card">
+                {% if product.image_url %}
+                <img src="{{ product.image_url }}" class="card-img-top product-image" alt="{{ product.name }}">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <i class="fas fa-image fa-3x text-muted"></i>
+                </div>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="h5 text-primary mb-0">${{ "%.2f"|format(product.price) }}</span>
+                            <span class="badge bg-secondary">{{ product.category }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Stock: {{ product.stock }}</small>
+                            <div>
+                                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-outline-primary btn-sm">View Details</a>
+                                {% if session.user_id %}
+                                <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-primary btn-sm" {% if product.stock == 0 %}disabled{% endif %}>
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if not products %}
+    <div class="text-center py-5">
+        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+        <h3>No products available</h3>
+        <p class="text-muted">Check back later for new luxury items.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
