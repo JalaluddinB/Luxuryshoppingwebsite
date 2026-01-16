@@ -282,8 +282,8 @@ if __name__ == '__main__':
             sample_products = [
                 Product(name='Luxury Watch', description='Premium Swiss-made timepiece with gold plating', price=2500.00, category='Watches', image_url='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400'),
                 Product(name='Designer Handbag', description='Italian leather handbag with premium hardware', price=1800.00, category='Bags', image_url='https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400'),
-                Product(name='Silk Scarf', description='100% pure silk scarf with exclusive print', price=350.00, category='Accessories', image_url='https://images.unsplash.com/photo-1594736797933-d0acc16193e7?w=400'),
-                Product(name='Leather Jacket', description='Genuine leather jacket with modern cut', price=1200.00, category='Clothing', image_url='https://images.unsplash.com/photo-1551488831-5826a0e08016?w=400'),
+                Product(name='Silk Scarf', description='100% pure silk scarf with exclusive designer print', price=350.00, category='Accessories', image_url='https://uk.silksilky.com/cdn/shop/files/1603004566_7c8e1b0d-c9e9-482a-9497-54e0a16fbd8c.jpg?v=1762889111&width=550'),
+                Product(name='Leather Jacket', description='Genuine brown leather jacket with classic cut', price=1200.00, category='Clothing', image_url='https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'),
                 Product(name='Diamond Ring', description='18k gold ring with brilliant cut diamond', price=5500.00, category='Jewelry', image_url='https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400'),
                 Product(name='Premium Sunglasses', description='Designer sunglasses with UV protection', price=450.00, category='Accessories', image_url='https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=400')
             ]
@@ -292,5 +292,15 @@ if __name__ == '__main__':
                 db.session.add(product)
             
             db.session.commit()
+
+        silk_scarf = Product.query.filter_by(name='Silk Scarf').first()
+        if silk_scarf and silk_scarf.image_url != 'https://uk.silksilky.com/cdn/shop/files/1603004566_7c8e1b0d-c9e9-482a-9497-54e0a16fbd8c.jpg?v=1762889111&width=550':
+            silk_scarf.image_url = 'https://uk.silksilky.com/cdn/shop/files/1603004566_7c8e1b0d-c9e9-482a-9497-54e0a16fbd8c.jpg?v=1762889111&width=550'
+            db.session.commit()
+
+        leather_jacket = Product.query.filter_by(name='Leather Jacket').first()
+        if leather_jacket and leather_jacket.image_url != 'https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80':
+            leather_jacket.image_url = 'https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'
+            db.session.commit()
     
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
