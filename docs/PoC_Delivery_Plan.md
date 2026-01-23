@@ -49,12 +49,13 @@ This document outlines the accelerated delivery plan for the PoC version of the 
 *Focus: The "Shopkeeper" experience and Demo readiness.*
 
 *   **Tasks:**
+    *   [ ] Slide Deck for Presentation
     *   [ ] Build Simple Admin Dashboard (Add Product, View Mock Orders).
     *   [ ] Refine AI Responses (Guardrails against hallucinations).
     *   [ ] UI Polish (Animations, Transitions).
     *   [ ] Final Deployment & Smoke Testing.
     *   [ ] **Milestone Submission: Feb 15.**
-*   **Deliverable:** Fully functional PoC ready for stakeholder demo.
+*   **Deliverable:** Fully functional PoC ready for stakeholder demo + Slide Dec
 
 ---
 
