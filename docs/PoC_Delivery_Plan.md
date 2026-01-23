@@ -55,7 +55,7 @@ This document outlines the accelerated delivery plan for the PoC version of the 
     *   [ ] UI Polish (Animations, Transitions).
     *   [ ] Final Deployment & Smoke Testing.
     *   [ ] **Milestone Submission: Feb 15.**
-*   **Deliverable:** Fully functional PoC ready for stakeholder demo + Slide Dec
+*   **Deliverable:** Fully functional PoC ready for stakeholder demo + Slide Deck
 
 ---
 
