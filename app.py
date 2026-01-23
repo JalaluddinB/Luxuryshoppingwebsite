@@ -17,10 +17,12 @@ db = SQLAlchemy(app)
 @app.context_processor
 def inject_user():
     user = None
+    cart_count = 0
     user_id = session.get('user_id')
     if user_id is not None:
         user = User.query.get(user_id)
-    return {'user': user}
+        cart_count = db.session.query(db.func.coalesce(db.func.sum(Cart.quantity), 0)).filter(Cart.user_id == user_id).scalar() or 0
+    return {'user': user, 'cart_count': cart_count}
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -165,17 +167,24 @@ def add_to_cart(product_id):
         return redirect(url_for('login'))
     
     product = Product.query.get_or_404(product_id)
+    if product.stock <= 0:
+        flash('This product is out of stock', 'error')
+        return redirect(url_for('product_detail', product_id=product_id))
     cart_item = Cart.query.filter_by(user_id=session['user_id'], product_id=product_id).first()
     
     if cart_item:
+        if cart_item.quantity + 1 > product.stock:
+            flash(f'Only {product.stock} left in stock for "{product.name}"', 'error')
+            return redirect(url_for('cart'))
         cart_item.quantity += 1
+        db.session.add(cart_item)
     else:
         cart_item = Cart(user_id=session['user_id'], product_id=product_id, quantity=1)
         db.session.add(cart_item)
     
     db.session.commit()
     flash('Product added to cart!', 'success')
-    return redirect(url_for('cart'))
+    return redirect(request.referrer or url_for('index'))
 
 @app.route('/remove_from_cart/<int:cart_id>')
 def remove_from_cart(cart_id):
@@ -200,25 +209,36 @@ def checkout():
         flash('Your cart is empty', 'error')
         return redirect(url_for('cart'))
     
-    total = sum(item.product.price * item.quantity for item in cart_items)
-    
-    order = Order(user_id=session['user_id'], total_amount=total)
-    db.session.add(order)
-    db.session.commit()
-    
-    for item in cart_items:
-        order_item = OrderItem(
-            order_id=order.id,
-            product_id=item.product_id,
-            quantity=item.quantity,
-            price=item.product.price
-        )
-        db.session.add(order_item)
-        db.session.delete(item)
-    
-    db.session.commit()
-    flash('Order placed successfully!', 'success')
-    return redirect(url_for('orders'))
+    try:
+        for item in cart_items:
+            if item.product.stock < item.quantity:
+                flash(f'Not enough stock for "{item.product.name}". Available: {item.product.stock}', 'error')
+                return redirect(url_for('cart'))
+
+        total = sum(item.product.price * item.quantity for item in cart_items)
+
+        order = Order(user_id=session['user_id'], total_amount=total)
+        db.session.add(order)
+        db.session.flush()
+
+        for item in cart_items:
+            item.product.stock -= item.quantity
+            order_item = OrderItem(
+                order_id=order.id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                price=item.product.price
+            )
+            db.session.add(order_item)
+            db.session.delete(item)
+
+        db.session.commit()
+        flash('Order placed successfully!', 'success')
+        return redirect(url_for('index'))
+    except Exception:
+        db.session.rollback()
+        flash('Checkout failed. Please try again.', 'error')
+        return redirect(url_for('cart'))
 
 @app.route('/orders')
 def orders():

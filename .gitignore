@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+
+# SQLite / local instance data
+instance/
+*.db
+
+# OS
+.DS_Store
