@@ -25,20 +25,14 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCartCount();
     
     // Add to cart animations
-    const addToCartButtons = document.querySelectorAll('form[action*="add_to_cart"] button');
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            if (!this.disabled) {
-                // Add loading state
-                const originalText = this.innerHTML;
-                this.innerHTML = '<span class="loading"></span> Adding...';
-                this.disabled = true;
-                
-                // Reset after a short delay (form will submit)
-                setTimeout(() => {
-                    this.innerHTML = originalText;
-                    this.disabled = false;
-                }, 1000);
+    const addToCartForms = document.querySelectorAll('form[action*="add_to_cart"]');
+    addToCartForms.forEach(form => {
+        form.addEventListener('submit', function() {
+            const button = form.querySelector('button[type="submit"]');
+            if (button && !button.disabled) {
+                button.dataset.originalText = button.innerHTML;
+                button.innerHTML = '<span class="loading"></span> Adding...';
+                button.disabled = true;
             }
         });
     });
