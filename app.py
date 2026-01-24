@@ -12,7 +12,7 @@ from wtforms import StringField, PasswordField, SubmitField, FloatField, TextAre
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'luxury_shopping_secret_key_2024'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///luxury_shopping.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///luxury_shopping.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -31,7 +31,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_admin = db.Column(db.Boolean, default=False)
     
@@ -110,6 +110,39 @@ class ConfigForm(FlaskForm):
     openai_api_key = StringField('OpenAI API Key', validators=[Length(max=200)])
     gemini_api_key = StringField('Gemini API Key', validators=[Length(max=200)])
     submit = SubmitField('Save Settings')
+
+def _fallback_advisor_answer(user_question, products):
+    q = (user_question or "").strip().lower()
+    if not q:
+        return None
+
+    matched = None
+    for p in products:
+        name = (p.name or "").strip()
+        if name and name.lower() in q:
+            matched = p
+            break
+
+    wants_price = any(x in q for x in ["price", "cost", "how much"])
+    wants_stock = any(x in q for x in ["how many", "stock", "available", "quantity", "in stock"])
+
+    if matched:
+        if wants_stock:
+            return f"We currently have {matched.stock} {matched.name}(s) in stock."
+        if wants_price:
+            return f"The {matched.name} costs ${matched.price:.2f}. {matched.description}"
+        return f"{matched.name}: ${matched.price:.2f}. {matched.description} (Category: {matched.category})"
+
+    if wants_stock and products:
+        lines = "\n".join([f"- {p.name}: {p.stock} in stock" for p in products[:5]])
+        return f"Here is current stock for some items:\n{lines}"
+
+    if wants_price and products:
+        sample = products[:5]
+        lines = "\n".join([f"- {p.name}: ${p.price:.2f}" for p in sample])
+        return f"Here are some current prices from our catalog:\n{lines}"
+
+    return None
 
 @app.route('/')
 def index():
@@ -398,11 +431,11 @@ def ask_advisor():
         answer = ""
         
         if provider == 'gemini':
-            client = genai.Client(api_key=final_api_key)
+            client = genai.Client(api_key=final_api_key, http_options={'api_version': 'v1alpha'})
             # Feed system prompt as first message effectively
             full_prompt = f"{system_prompt}\n\nUser Question: {user_question}"
             response = client.models.generate_content(
-                model='gemini-3-pro-preview',
+                model='gemini-2.5-flash-lite',
                 contents=full_prompt
             )
             answer = response.text
@@ -419,6 +452,10 @@ def ask_advisor():
             
         return jsonify({'answer': answer})
     except Exception as e:
+        products = Product.query.all()
+        fallback = _fallback_advisor_answer(user_question, products)
+        if fallback:
+            return jsonify({'answer': fallback, 'fallback': True})
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
@@ -455,4 +492,4 @@ if __name__ == '__main__':
             leather_jacket.image_url = 'https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'
             db.session.commit()
     
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
