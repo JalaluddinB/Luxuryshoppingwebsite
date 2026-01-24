@@ -45,8 +45,15 @@ ALLOW_SQLITE=1
 ```
 
 5. Run the application:
+
+**With SQLite (Local Development):**
 ```bash
-python app.py
+ALLOW_SQLITE=1 venv/bin/python app.py
+```
+
+**With Supabase Postgres (Production):**
+```bash
+venv/bin/python app.py
 ```
 
 The application will be available at `http://localhost:5000`
