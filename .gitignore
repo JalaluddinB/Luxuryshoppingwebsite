@@ -21,3 +21,8 @@ instance/
 
 # OS
 .DS_Store
+
+# terraform
+*.tfstate
+*.tfstate.backup
+.terraform/

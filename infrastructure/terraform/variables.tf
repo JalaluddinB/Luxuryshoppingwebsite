@@ -1,11 +1,11 @@
 variable "resource_group_name" {
   description = "Name of the resource group"
-  default     = "rg-oslp-prod-001"
+  default     = "rg-oslp-prod-002"
 }
 
 variable "location" {
   description = "Azure region"
-  default     = "East US"
+  default     = "eastasia"
 }
 
 variable "vnet_name" {

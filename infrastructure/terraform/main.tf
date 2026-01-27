@@ -3,6 +3,15 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
+# Azure Container Registry (ACR)
+resource "azurerm_container_registry" "acr" {
+  name                = "acroslpprod002"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku                 = "Premium"
+  admin_enabled       = true
+}
+
 # Virtual Network
 resource "azurerm_virtual_network" "vnet" {
   name                = var.vnet_name
@@ -33,13 +42,4 @@ resource "azurerm_subnet" "paas_subnet" {
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.3.0/24"]
-}
-
-# Azure Container Registry (ACR)
-resource "azurerm_container_registry" "acr" {
-  name                = "acroslpprod001"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  sku                 = "Basic"
-  admin_enabled       = false
 }

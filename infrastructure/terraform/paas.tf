@@ -14,19 +14,6 @@ resource "azurerm_mssql_database" "db" {
   sku_name  = "S0"
 }
 
-# Azure Cache for Redis
-resource "azurerm_redis_cache" "redis" {
-  name                = "redis-oslp-prod-001"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  capacity            = 0
-  family              = "C"
-  sku_name            = "Basic"
-  non_ssl_port_enabled = false
-  minimum_tls_version = "1.2"
-}
-
-
 # Azure Key Vault
 resource "azurerm_key_vault" "kv" {
   name                        = "kv-oslp-prod-001"
