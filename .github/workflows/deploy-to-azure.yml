@@ -25,12 +25,18 @@ jobs:
         uses: azure/cli@v2
         with:
           inlineScript: |
+            set -euo pipefail
+            az account show
+            az acr show --name "${{ secrets.ACR_NAME }}" --query "{name:name,loginServer:loginServer,resourceGroup:resourceGroup}" -o json
             az acr build --registry "${{ secrets.ACR_NAME }}" --image "${{ secrets.ACR_REPOSITORY }}:latest" .
 
       - name: Point Web App to latest image and restart
         uses: azure/cli@v2
         with:
           inlineScript: |
+            set -euo pipefail
+            az account show
+            az webapp show --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" --name "${{ secrets.AZURE_WEBAPP_NAME }}" --query "{name:name,resourceGroup:resourceGroup,defaultHostName:defaultHostName}" -o json
             az webapp config container set \
               --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
               --name "${{ secrets.AZURE_WEBAPP_NAME }}" \
