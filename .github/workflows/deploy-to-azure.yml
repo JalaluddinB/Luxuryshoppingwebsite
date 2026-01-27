@@ -8,6 +8,13 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  ACR_NAME: acroslpprod002
+  ACR_REPOSITORY: luxury-shopping
+  ACR_LOGIN_SERVER: acroslpprod002.azurecr.io
+  AZURE_RESOURCE_GROUP: rg-oslp-prod-002
+  AZURE_WEBAPP_NAME: app-oslp-prod-002
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -21,22 +28,42 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.0"
+
+      - name: Terraform Init
+        run: |
+          cd infrastructure/terraform
+          terraform init
+
+      - name: Terraform Plan
+        run: |
+          cd infrastructure/terraform
+          terraform plan
+
+      - name: Terraform Apply
+        run: |
+          cd infrastructure/terraform
+          terraform apply -auto-approve
+
       - name: Build and push image to ACR
         uses: azure/cli@v2
         with:
           inlineScript: |
-            az acr build --registry "${{ secrets.ACR_NAME }}" --image "${{ secrets.ACR_REPOSITORY }}:latest" .
+            az acr build --registry "${{ env.ACR_NAME }}" --image "${{ env.ACR_REPOSITORY }}:latest" .
 
       - name: Point Web App to latest image and restart
         uses: azure/cli@v2
         with:
           inlineScript: |
             az webapp config container set \
-              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
-              --name "${{ secrets.AZURE_WEBAPP_NAME }}" \
-              --docker-custom-image-name "${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:latest" \
-              --docker-registry-server-url "https://${{ secrets.ACR_LOGIN_SERVER }}"
+              --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+              --name "${{ env.AZURE_WEBAPP_NAME }}" \
+              --docker-custom-image-name "${{ env.ACR_LOGIN_SERVER }}/${{ env.ACR_REPOSITORY }}:latest" \
+              --docker-registry-server-url "https://${{ env.ACR_LOGIN_SERVER }}"
 
             az webapp restart \
-              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
-              --name "${{ secrets.AZURE_WEBAPP_NAME }}"
+              --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+              --name "${{ env.AZURE_WEBAPP_NAME }}"
