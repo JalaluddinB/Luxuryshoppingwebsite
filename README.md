@@ -72,7 +72,7 @@ echo DATABASE_URL=mssql+pyodbc://USERNAME:PASSWORD@luxurydatabase.database.windo
 
 5. **Run the application:**
 ```bash
-python app.py
+./venv/bin/python3 app.py
 ```
 
 ### Important Notes:

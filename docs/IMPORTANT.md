@@ -37,9 +37,9 @@ powershell
 
 
 
-python app.pyOpen:http://localhost:50006) (Optional) Confirm it’s really connected to Azure SQL Database
+./venv/bin/python3 app.pyOpen:http://localhost:5000) (Optional) Confirm it’s really connected to Azure SQL Database
 powershell
 
 
 
-python -c "import app; from sqlalchemy import text; app.app.app_context().push(); print(app.db.session.execute(text('select 1')).scalar())"Expected output:1StatusThese are the exact steps your teammates need to run locally to view the website with Azure SQL Database.
+./venv/bin/python3 -c "import app; from sqlalchemy import text; app.app.app_context().push(); print(app.db.session.execute(text('select 1')).scalar())"Expected output:1StatusThese are the exact steps your teammates need to run locally to view the website with Azure SQL Database.

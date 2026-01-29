@@ -14,7 +14,7 @@ The platform uses Role-Based Access Control (RBAC) to differentiate between stan
 ### 1. Creating an Admin
 - **Current Method**: Direct database modification.
 - **Steps**:
-  1. Open python shell: `python` -> `from app import app, db, User` -> `app.app_context().push()`.
+  1. Open python shell: `./venv/bin/python3` -> `from app import app, db, User` -> `app.app_context().push()`.
   2. Find user: `u = User.query.filter_by(username='target_user').first()`.
   3. Promote: `u.is_admin = True` -> `db.session.commit()`.
 
