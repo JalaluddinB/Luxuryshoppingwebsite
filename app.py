@@ -704,6 +704,7 @@ def ask_advisor():
             "- Reference previous conversation when relevant to show continuity\n"
             "- Focus on 1-2 key products that best match the query\n"
             "- Use sophisticated but natural language\n"
+            "- Story-driven: explain WHY a piece is special, not just what it is\n"
             "- Always suggest 1 complementary item with specific styling rationale\n"
             "- End with a specific question to continue conversation\n\n"
             "GUARDRAILS:\n"
