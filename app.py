@@ -186,13 +186,19 @@ def index():
 @app.route('/search')
 def search():
     query = request.args.get('q', '').strip()
+    # Limit query length to prevent performance issues
+    if len(query) > 200:
+        query = query[:200]
+    
     if query:
+        # Escape SQL LIKE wildcards to prevent unexpected matching behavior
+        escaped_query = query.replace('%', '\\%').replace('_', '\\_')
         # Search in product name, description, and category
         products = Product.query.filter(
             db.or_(
-                Product.name.ilike(f'%{query}%'),
-                Product.description.ilike(f'%{query}%'),
-                Product.category.ilike(f'%{query}%')
+                Product.name.ilike(f'%{escaped_query}%'),
+                Product.description.ilike(f'%{escaped_query}%'),
+                Product.category.ilike(f'%{escaped_query}%')
             )
         ).all()
     else:

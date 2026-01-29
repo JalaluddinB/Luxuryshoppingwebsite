@@ -41,7 +41,7 @@
                     {% endif %}
                 </ul>
                 <form class="d-flex me-3" action="{{ url_for('search') }}" method="GET" role="search">
-                    <input class="form-control me-2" type="search" name="q" placeholder="Search for products..." aria-label="Search" style="min-width: 250px;">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Search for products..." aria-label="Search" style="min-width: 250px;" maxlength="200">
                     <button class="btn btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
                 </form>
                 <ul class="navbar-nav">

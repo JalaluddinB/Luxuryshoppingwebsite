@@ -15,7 +15,7 @@
     <div class="row mb-4">
         <div class="col-12">
             {% if search_query %}
-            <h2 class="text-center mb-4">Search Results for "{{ search_query }}"</h2>
+            <h2 class="text-center mb-4">Search Results for "{{ search_query|e }}"</h2>
             {% else %}
             <h2 class="text-center mb-4">Featured Products</h2>
             {% endif %}
@@ -65,7 +65,7 @@
     <div class="text-center py-5">
         <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
         {% if search_query %}
-        <h3>No products found for "{{ search_query }}"</h3>
+        <h3>No products found for "{{ search_query|e }}"</h3>
         <p class="text-muted">Try searching with different keywords.</p>
         {% else %}
         <h3>No products available</h3>
