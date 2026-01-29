@@ -63,8 +63,28 @@ body::after {
     100% { transform: rotate(360deg); }
 }
 
-/* Hero Section */
-.hero-section {
+/* Utility classes */
+.text-luxury { color: var(--luxury-gold) !important; }
+.bg-luxury { background-color: var(--luxury-gold) !important; color: #000 !important; }
+.btn-luxury {
+    background-color: var(--luxury-gold);
+    color: #000;
+    border: 1px solid var(--luxury-gold);
+    transition: all 0.3s ease;
+}
+.btn-luxury:hover {
+    background-color: transparent;
+    color: var(--luxury-gold);
+    border-color: var(--luxury-gold);
+}
+.smaller { font-size: 0.85rem; }
+
+/* Custom Badge */
+.badge-luxury {
+    background: linear-gradient(135deg, var(--luxury-gold) 0%, #b8860b 100%);
+    color: white;
+    font-weight: 500;
+}
     background: radial-gradient(1200px 520px at 20% 0%, rgba(138, 92, 246, 0.38) 0%, transparent 62%),
                 radial-gradient(900px 460px at 92% 18%, rgba(255, 215, 0, 0.10) 0%, transparent 58%),
                 linear-gradient(135deg, #050312 0%, #14002b 45%, #070320 100%);

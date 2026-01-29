@@ -12,7 +12,7 @@
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body {% if session.user_id %}data-user-id="{{ session.user_id }}"{% endif %}>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">

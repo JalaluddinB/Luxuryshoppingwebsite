@@ -138,6 +138,54 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 500);
         });
     });
+
+    // Progressive Loading (Load More)
+    const loadMoreButtons = document.querySelectorAll('.btn-load-more');
+    loadMoreButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const category = this.dataset.category;
+            const section = document.querySelector(`.category-section[data-category="${category}"]`);
+            const grid = section.querySelector('.product-grid');
+            let page = parseInt(section.dataset.page) + 1;
+            
+            // Add loading state
+            const originalButtonContent = this.innerHTML;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Curating more...';
+            this.disabled = true;
+
+            fetch(`/api/products?category=${encodeURIComponent(category)}&page=${page}&per_page=6`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.products && data.products.length > 0) {
+                        data.products.forEach(product => {
+                            const productHtml = createProductHtml(product);
+                            grid.insertAdjacentHTML('beforeend', productHtml);
+                        });
+                        
+                        section.dataset.page = page;
+                        
+                        // Add fade-in animation to new cards
+                        grid.querySelectorAll('.product-card:not(.fade-in)').forEach(el => {
+                            if (typeof fadeObserver !== 'undefined') fadeObserver.observe(el);
+                        });
+
+                        if (!data.has_next) {
+                            this.remove();
+                        } else {
+                            this.innerHTML = originalButtonContent;
+                            this.disabled = false;
+                        }
+                    } else {
+                        this.remove();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading products:', error);
+                    this.innerHTML = originalButtonContent;
+                    this.disabled = false;
+                });
+        });
+    });
 });
 
 // Cart count update function
@@ -177,6 +225,53 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+function createProductHtml(product) {
+    const formattedPrice = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+    }).format(product.price);
+
+    const sessionUserId = document.body.dataset.userId;
+
+    let cartButtonHtml = '';
+    if (sessionUserId) {
+        cartButtonHtml = `
+            <form action="/add_to_cart/${product.id}" method="POST">
+                <button type="submit" class="btn btn-luxury w-100 btn-sm" ${product.stock === 0 ? 'disabled' : ''}>
+                    <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                </button>
+            </form>
+        `;
+    }
+
+    return `
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 product-card shadow-sm">
+                ${product.image_url ? 
+                    `<img src="${product.image_url}" class="card-img-top product-image" alt="${product.name}" loading="lazy">` :
+                    `<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                        <i class="fas fa-image fa-3x text-muted"></i>
+                    </div>`
+                }
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${product.name}</h5>
+                    <p class="card-text text-muted smaller">${product.description.substring(0, 100)}${product.description.length > 100 ? '...' : ''}</p>
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="h5 text-primary mb-0">${formattedPrice}</span>
+                            <small class="text-muted">Stock: ${product.stock}</small>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a href="/product/${product.id}" class="btn btn-outline-dark btn-sm">View Details</a>
+                            ${cartButtonHtml}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 // Add CSS animations
@@ -246,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (data.history && data.history.length > 0) {
-                // Clear the default greeting and rebuild conversation
+                // Rebuild the conversation
                 chatMessages.innerHTML = '';
                 
                 // Always start with the greeting
@@ -257,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     addMessage(msg.content, msg.role === 'assistant' ? 'ai' : 'user');
                 });
             }
-            // If no history, keep the default greeting in HTML
+            // If no history, keep the default greeting
         } catch (error) {
             console.log('Could not load conversation history:', error);
             // Keep the default greeting if history can't be loaded
