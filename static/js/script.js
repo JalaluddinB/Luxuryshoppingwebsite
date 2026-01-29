@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 chatMessages.innerHTML = '';
                 
                 // Always start with the greeting
-                addMessage("Hello! I'm Lux, your personal shopping advisor. How can I assist you today?", 'ai');
+                addMessage("Hello! I'm Lux, your personal luxury advisor. I'm here to help you discover pieces that bring meaning and joy to your life. How may I illuminate your shopping journey today?", 'ai');
                 
                 // Add the conversation history
                 data.history.forEach(msg => {
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('lux_chat_session_id', sessionId);
             // Clear chat messages
-            chatMessages.innerHTML = '<div class="message ai">Hello! I\'m Lux, your personal shopping advisor. How can I assist you today?</div>';
+            chatMessages.innerHTML = '<div class="message ai">Hello! I\'m Lux, your personal luxury advisor. I\'m here to help you discover pieces that bring meaning and joy to your life. How may I illuminate your shopping journey today?</div>';
             addMessage('System: New conversation session started.', 'ai');
             chatInput.value = '';
             return;
