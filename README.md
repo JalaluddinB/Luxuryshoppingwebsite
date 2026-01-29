@@ -1,6 +1,6 @@
 # Luxury Shopping Website
 
-A premium e-commerce platform built with Flask, featuring user authentication, product catalog, shopping cart, and order management.
+A premium e-commerce platform built with Flask, featuring user authentication, product catalog, shopping cart, order management, and an AI-powered luxury advisor with a sophisticated personality.
 
 ## Features
 
@@ -9,6 +9,7 @@ A premium e-commerce platform built with Flask, featuring user authentication, p
 - **Shopping Cart**: Add/remove items with real-time cart updates
 - **Order Management**: Complete order processing with status tracking
 - **Admin Panel**: Product management and order administration
+- **Lux Advisor**: AI-powered luxury concierge with constitutional AI principles (see [SOUL.md](SOUL.md))
 - **Modern UI**: Responsive design with Tailwind CSS
 - **SQL Database**: Azure SQL Database with SQLAlchemy ORM
 
@@ -121,15 +122,24 @@ luxury-shopping/
 
 1. **Browse Products**: Visit the homepage to see featured products
 2. **Register/Login**: Create an account or login with existing credentials
-3. **Add to Cart**: Click "Add to Cart" on any product
-4. **Checkout**: Review cart items and place order
-5. **Track Orders**: View order history and status in "Orders" section
-6. **Admin Access**: Use admin credentials to manage products and orders
+3. **Chat with Lux**: Click the chat widget to interact with your AI luxury advisor
+4. **Add to Cart**: Click "Add to Cart" on any product
+5. **Checkout**: Review cart items and place order
+6. **Track Orders**: View order history and status in "Orders" section
+7. **Admin Access**: Use admin credentials to manage products and orders
+
+## Lux Advisor - AI Luxury Concierge
+
+Lux is our sophisticated AI concierge powered by constitutional AI principles. Learn more about Lux's personality and values in:
+- [SOUL.md](SOUL.md) - Lux's constitutional framework
+- [docs/LUX_ADVISOR_ENHANCEMENT.md](docs/LUX_ADVISOR_ENHANCEMENT.md) - Implementation details
+- [docs/MANUAL_TESTING_GUIDE.md](docs/MANUAL_TESTING_GUIDE.md) - Testing guide
 
 ## Technologies Used
 
 - **Backend**: Flask (Python web framework)
 - **Database**: Azure SQL Database (recommended) with SQLAlchemy ORM
+- **AI**: OpenAI GPT / Google Gemini for Lux Advisor
 - **Frontend**: HTML5, Tailwind CSS, JavaScript
 - **Authentication**: Flask-WTF with password hashing
 - **Icons**: Font Awesome
