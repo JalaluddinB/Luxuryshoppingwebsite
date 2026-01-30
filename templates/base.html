@@ -26,6 +26,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('index') }}">Home</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('lux_welcome') }}">
+                            <i class="fas fa-robot"></i> About our AI
+                        </a>
+                    </li>
                     {% if session.user_id %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('cart') }}">
