@@ -1,0 +1,8 @@
+# ZAP Scanning Rules
+# Use the scan rule configuration file to ignore example ascan rules
+#
+# Format:
+# scanRuleIdIGNOREURL
+# Example: 10011IGNOREhttp://example.com/some/path/
+
+# Ignore false positives or known issues here
