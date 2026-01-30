@@ -365,7 +365,7 @@ def checkout():
 
         total = sum(item.product.price * item.quantity for item in cart_items)
 
-        order = Order(user_id=session['user_id'], total=total)
+        order = Order(user_id=session['user_id'], total_amount=total)
         db.session.add(order)
         db.session.flush()
 
@@ -384,6 +384,7 @@ def checkout():
         flash('Order placed successfully!', 'success')
         return redirect(url_for('index'))
     except Exception:
+        app.logger.exception('Checkout failed')
         db.session.rollback()
         flash('Checkout failed. Please try again.', 'error')
         return redirect(url_for('cart'))

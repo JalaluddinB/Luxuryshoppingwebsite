@@ -20,7 +20,7 @@
                         <span class="badge bg-{{ 'success' if order.status == 'completed' else 'warning' if order.status == 'pending' else 'info' }}">
                             {{ order.status.title() }}
                         </span>
-                        <h5 class="text-primary mb-0 ms-3">${{ "%.2f"|format(order.total) }}</h5>
+                        <h5 class="text-primary mb-0 ms-3">${{ "%.2f"|format(order.total_amount) }}</h5>
                     </div>
                 </div>
                 <div class="card-body">
