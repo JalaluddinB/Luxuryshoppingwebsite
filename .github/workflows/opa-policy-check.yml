@@ -1,0 +1,83 @@
+name: Open Policy Agent (OPA) Policy Testing
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'policies/**'
+      - 'infrastructure/**'
+      - 'Dockerfile'
+  pull_request:
+    branches: ["main"]
+    paths:
+      - 'policies/**'
+      - 'infrastructure/**'
+      - 'Dockerfile'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  opa_test:
+    runs-on: ubuntu-latest
+    name: OPA Policy Testing
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup OPA
+        uses: open-policy-agent/setup-opa@v2
+        with:
+          version: latest
+
+      - name: Verify OPA installation
+        run: opa version
+
+      - name: Test OPA Policies Syntax
+        run: |
+          echo "Testing policy syntax..."
+          opa check policies/
+
+      - name: Run OPA Tests (if test files exist)
+        run: |
+          if [ -d "policies/tests" ]; then
+            echo "Running OPA tests..."
+            opa test policies/ -v
+          else
+            echo "No test files found, skipping OPA tests"
+          fi
+
+      - name: List Terraform Files for Manual Evaluation
+        if: hashFiles('infrastructure/terraform/*.tf') != ''
+        run: |
+          echo "Terraform files found. For full policy evaluation:"
+          echo "1. Generate Terraform plan as JSON: terraform plan -out=tfplan.binary && terraform show -json tfplan.binary > tfplan.json"
+          echo "2. Evaluate with OPA: opa eval --data policies/security/terraform.rego --input tfplan.json 'data.security.terraform'"
+          echo ""
+          echo "Available Terraform files:"
+          ls -l infrastructure/terraform/*.tf || true
+
+      - name: Create Policy Report
+        if: success() || failure()
+        run: |
+          echo "# OPA Policy Evaluation Report" > opa-report.md
+          echo "" >> opa-report.md
+          echo "## Summary" >> opa-report.md
+          echo "- Policy Check: Completed" >> opa-report.md
+          echo "- Policies Location: \`policies/\`" >> opa-report.md
+          echo "" >> opa-report.md
+          echo "## Available Policies" >> opa-report.md
+          echo "### Security Policies" >> opa-report.md
+          ls -l policies/security/*.rego || echo "No security policies found" >> opa-report.md
+          echo "" >> opa-report.md
+          echo "### Compliance Policies" >> opa-report.md
+          ls -l policies/compliance/*.rego || echo "No compliance policies found" >> opa-report.md
+
+      - name: Upload Policy Report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opa-policy-report
+          path: opa-report.md

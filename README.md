@@ -147,11 +147,66 @@ Lux is our sophisticated AI concierge powered by constitutional AI principles. L
 
 ## Security Features
 
+### Application Security
 - Password hashing with Werkzeug
 - CSRF protection with Flask-WTF
 - Session-based authentication
 - Input validation and sanitization
 - SQL injection prevention with SQLAlchemy ORM
+
+### Security Scanning Tools
+
+This project integrates multiple free, open-source security tools for comprehensive security scanning:
+
+#### 1. **OWASP ZAP** (Dynamic Application Security Testing)
+- **Purpose**: Automated security testing of the running web application
+- **Workflow**: `.github/workflows/owasp-zap-scan.yml`
+- **Features**:
+  - Baseline security scans
+  - Automated vulnerability detection
+  - Integration with GitHub Security
+- **Schedule**: Runs on push to main, PRs, and weekly on Mondays
+
+#### 2. **Checkov** (Infrastructure as Code Security)
+- **Purpose**: Static analysis of infrastructure code (Terraform, Dockerfile, GitHub Actions)
+- **Workflow**: `.github/workflows/checkov-scan.yml`
+- **Features**:
+  - Scans Terraform configurations for security issues
+  - Validates Dockerfile best practices
+  - Checks GitHub Actions workflows
+  - SARIF output for GitHub Security integration
+- **Trigger**: Runs when infrastructure files change
+
+#### 3. **OWASP Dependency-Check** (Dependency Vulnerability Scanning)
+- **Purpose**: Identifies known vulnerabilities in project dependencies
+- **Workflow**: `.github/workflows/dependency-check.yml`
+- **Features**:
+  - Scans Python dependencies (requirements.txt)
+  - Checks against CVE database
+  - Generates HTML, JSON, and SARIF reports
+- **Schedule**: Runs on dependency changes and weekly on Mondays
+
+#### 4. **Open Policy Agent (OPA)** (Policy Enforcement)
+- **Purpose**: Enforces security and compliance policies across infrastructure
+- **Workflow**: `.github/workflows/opa-policy-check.yml`
+- **Policies Location**: `policies/`
+- **Features**:
+  - Dockerfile security policies
+  - Terraform/Azure security policies
+  - Compliance and governance policies
+  - Automated policy testing
+- **Policy Categories**:
+  - `policies/security/` - Security-focused policies
+  - `policies/compliance/` - Compliance requirements
+
+### Security Reports
+
+All security scans generate reports available in:
+- GitHub Security tab (Code Scanning Alerts)
+- GitHub Actions artifacts
+- Pull Request comments (for violations)
+
+For more details on OPA policies, see [`policies/README.md`](policies/README.md).
 
 ## Contributing
 

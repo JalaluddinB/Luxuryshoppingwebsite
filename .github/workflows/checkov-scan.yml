@@ -1,0 +1,47 @@
+name: Checkov IaC Security Scan
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'infrastructure/**'
+      - 'Dockerfile'
+      - '.github/workflows/**'
+  pull_request:
+    branches: ["main"]
+    paths:
+      - 'infrastructure/**'
+      - 'Dockerfile'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  checkov_scan:
+    runs-on: ubuntu-latest
+    name: Checkov Infrastructure Security Scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: terraform,dockerfile,github_actions
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+          soft_fail: true
+          download_external_modules: true
+
+      - name: Upload SARIF file
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+          category: checkov
