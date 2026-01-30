@@ -28,14 +28,16 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Build and push image to ACR
+      - name: Login to ACR
         uses: azure/cli@v2
         with:
           inlineScript: |
-            set -euo pipefail
-            az account show
-            az acr show --name "${{ env.ACR_NAME }}" --query "{name:name,loginServer:loginServer,resourceGroup:resourceGroup}" -o json
-            az acr build --registry "${{ env.ACR_NAME }}" --image "${{ env.ACR_REPOSITORY }}:latest" .
+            az acr login --name "${{ env.ACR_NAME }}"
+
+      - name: Build and push image to ACR
+        run: |
+          docker build -t "${{ env.ACR_LOGIN_SERVER }}/${{ env.ACR_REPOSITORY }}:latest" .
+          docker push "${{ env.ACR_LOGIN_SERVER }}/${{ env.ACR_REPOSITORY }}:latest"
 
       - name: Point Web App to latest image and restart
         uses: azure/cli@v2
