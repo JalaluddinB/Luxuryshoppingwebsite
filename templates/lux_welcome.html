@@ -187,6 +187,7 @@
                     Let's discover something extraordinary together.
                 </p>
                 <button type="button" class="btn btn-lg px-5 py-3" id="start-chat-btn" 
+                        aria-label="Open chat with Lux Advisor"
                         style="background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); 
                                color: white; 
                                border: none; 
@@ -210,8 +211,7 @@
                         <strong>A note on authenticity:</strong> I'm an AI assistant powered by advanced language models, 
                         designed with constitutional principles to provide you with honest, helpful, and respectful service. 
                         While I'm not human, I'm committed to making your luxury shopping experience as personal and 
-                        meaningful as possible. Learn more about my values in our 
-                        <a href="{{ url_for('index') }}" class="text-decoration-none" style="color: #c0392b;">Constitutional Framework</a>.
+                        meaningful as possible.
                     </p>
                 </div>
             </div>
@@ -237,14 +237,19 @@
 
 <script>
 // Handle chat button click
-document.getElementById('start-chat-btn').addEventListener('click', function() {
-    // Trigger the chat toggle
-    const chatToggle = document.getElementById('chat-toggle');
-    if (chatToggle) {
-        chatToggle.click();
+document.addEventListener('DOMContentLoaded', function() {
+    const startChatBtn = document.getElementById('start-chat-btn');
+    if (startChatBtn) {
+        startChatBtn.addEventListener('click', function() {
+            // Trigger the chat toggle
+            const chatToggle = document.getElementById('chat-toggle');
+            if (chatToggle) {
+                chatToggle.click();
+            }
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
-    // Scroll to top smoothly
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 </script>
 {% endblock %}
