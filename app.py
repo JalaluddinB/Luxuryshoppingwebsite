@@ -221,6 +221,10 @@ def index():
         
     return render_template('index.html', categorized_products=categorized_products)
 
+@app.route('/lux-advisor')
+def lux_welcome():
+    return render_template('lux_welcome.html')
+
 @app.route('/search')
 def search():
     query = request.args.get('q', '').strip()
