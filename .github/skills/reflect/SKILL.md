@@ -15,6 +15,7 @@ Use this skill when the user provides corrections (feedback) or when analyzing w
 - Interaction: Pause execution immediately upon "No!" or alarm signals.
 - Interaction: When correcting mistakes, explain the cause and proposed fix *before* executing it.
 - Interaction: Distinguish between generative (code) and additive (docs) tasks; verify file state before writing to docs.
+- Workflow: Avoid reading entire large files when targeted edits are possible to prevent "looping"/stalling.
 
 ## Capability: Reflect (Learn from Corrections)
 

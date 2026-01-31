@@ -383,6 +383,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const text = chatInput.value.trim();
         if (!text) return;
 
+        // Dev Mode: Allow switching session ID
+        if (text.startsWith('/session ')) {
+            const newSessionId = text.substring(9).trim();
+            if (newSessionId) {
+                localStorage.setItem('lux_chat_session_id', newSessionId);
+                sessionId = newSessionId;
+                chatMessages.innerHTML = '';
+                addMessage(`System: Switched to session '${newSessionId}'. Reloading history...`, 'ai');
+                loadConversationHistory();
+            }
+            chatInput.value = '';
+            return;
+        }
+
         // Dev Mode: Allow setting API key locally and detect provider
         if (text.startsWith('/apikey ')) {
             const key = text.substring(8).trim();

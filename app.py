@@ -841,6 +841,14 @@ def get_conversation_history():
     if not session_id:
         return jsonify({'error': 'session_id parameter required'}), 400
     
+    # Security: Only allow arbitrary session access in strict debug mode (verified by environment)
+    # Standard generated sessions look like: session_TIMESTAMP_RANDOM
+    is_debug_env = os.environ.get('FLASK_DEBUG') == '1'
+    is_standard_session = session_id.startswith('session_') and len(session_id.split('_')) >= 3
+    
+    if not is_debug_env and not is_standard_session:
+        return jsonify({'error': 'Access to custom sessions required FLASK_DEBUG mode'}), 403
+
     try:
         # Get conversation history for this session
         # For logged-in users, filter by both user_id and session_id
