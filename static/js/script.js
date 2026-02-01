@@ -469,7 +469,41 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) {
                  addMessage('Error: ' + data.error, 'ai');
             } else {
-                addMessage(data.answer, 'ai');
+                // Check if the response contains cart automation tag
+                const cartTagMatch = data.answer.match(/\[ADD_TO_CART:\s*([^\]]+)\]/);
+                
+                if (cartTagMatch) {
+                    const productName = cartTagMatch[1].trim();
+                    // Remove the tag from the message before displaying
+                    const cleanMessage = data.answer.replace(/\[ADD_TO_CART:\s*[^\]]+\]/, '').trim();
+                    addMessage(cleanMessage, 'ai');
+                    
+                    // Automatically add to cart
+                    try {
+                        const cartResponse = await fetch('/api/add_to_cart_by_name', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ product_name: productName })
+                        });
+                        
+                        const cartData = await cartResponse.json();
+                        
+                        if (cartData.success) {
+                            addMessage(`✓ ${cartData.message}`, 'system');
+                            // Update cart count in navigation
+                            updateCartCount();
+                        } else {
+                            addMessage(`Unable to add to cart: ${cartData.error}`, 'system');
+                        }
+                    } catch (cartError) {
+                        console.error('Cart error:', cartError);
+                        addMessage('There was an issue adding the item to your cart. Please try manually.', 'system');
+                    }
+                } else {
+                    addMessage(data.answer, 'ai');
+                }
             }
 
         } catch (error) {
