@@ -2,32 +2,43 @@
 name: OWASP ZAP Security Scan
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    # Run weekly on Mondays at 00:00 UTC
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
-  zap_scan_job:
+  zap_scan:
     runs-on: ubuntu-latest
-
+    name: OWASP ZAP Scan
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Fix directory permissions
+        run: |
+          # Pre-create report files first
+          touch report_json.json report_md.md report_html.html
+          chmod 644 report_json.json report_md.md report_html.html
+          # Ensure workspace directory is writable by Docker
+          # The ZAP Docker container runs as user 1000, so we need to make
+          # the workspace accessible to that user
+          sudo chown -R 1000:1000 ${{ github.workspace }}
+
+      - name: ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
         with:
-          python-version: "3.x"
-
-      - name: Setup workspace
-        run: mkdir -p $HOME/workspace && cd $HOME/workspace
-
-      - name: Start OWASP
-        run: echo "Line preserved - preexisting start OWASP logic unaltered" >> NOTE
-
-      - name: Ensure writable directory for reports
-        run: mkdir -p ${{ github.workspace }}/reports && chmod -R 777 ${{ github.workspace }}/reports
-
-      - name: Create Reports
-          uses: touch[3rdparty: MinimalBugfix,Xyz_Affects] few dairy data suggestions or filled locally  directories.tags,timing.json.entry ;Updated.optimisation JSON upstream scan relative-policy timing
+          target: 'https://luxuryshoppingwebsite.azurewebsites.net'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a -T 300'
+          issue_title: 'OWASP ZAP Security Scan Report'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fail_action: false

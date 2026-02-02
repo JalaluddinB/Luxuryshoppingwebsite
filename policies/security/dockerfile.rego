@@ -8,7 +8,7 @@ import future.keywords.if
 import future.keywords.in
 
 # Check if Dockerfile uses specific base image
-deny[msg] {
+deny contains msg if {
     input[i].Cmd == "from"
     val := input[i].Value
     not contains(val[0], ":")
@@ -16,17 +16,17 @@ deny[msg] {
 }
 
 # Ensure non-root user is specified
-deny[msg] {
+deny contains msg if {
     not user_defined
     msg = "Dockerfile should specify a non-root USER"
 }
 
-user_defined {
+user_defined if {
     input[_].Cmd == "user"
 }
 
 # Check for best practices
-warn[msg] {
+warn contains msg if {
     input[i].Cmd == "run"
     val := concat(" ", input[i].Value)
     contains(val, "apt-get")
@@ -36,17 +36,17 @@ warn[msg] {
 }
 
 # Check HEALTHCHECK is defined
-warn[msg] {
+warn contains msg if {
     not healthcheck_defined
     msg = "Consider adding a HEALTHCHECK instruction for better container monitoring"
 }
 
-healthcheck_defined {
+healthcheck_defined if {
     input[_].Cmd == "healthcheck"
 }
 
 # Prevent latest tag usage
-deny[msg] {
+deny contains msg if {
     input[i].Cmd == "from"
     val := input[i].Value
     contains(val[0], ":latest")

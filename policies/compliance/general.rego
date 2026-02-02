@@ -8,7 +8,7 @@ import future.keywords.if
 import future.keywords.in
 
 # Check for required tags on Azure resources
-deny[msg] {
+deny contains msg if {
     resource_types := ["azurerm_resource_group", "azurerm_app_service", "azurerm_container_registry"]
     resource_type := resource_types[_]
     input.resource[resource_type][name]
@@ -18,7 +18,7 @@ deny[msg] {
 }
 
 # Ensure environment tag exists
-warn[msg] {
+warn contains msg if {
     resource_types := ["azurerm_resource_group", "azurerm_app_service"]
     resource_type := resource_types[_]
     input.resource[resource_type][name]
@@ -29,7 +29,7 @@ warn[msg] {
 }
 
 # Ensure owner/team tag exists for accountability
-warn[msg] {
+warn contains msg if {
     resource_types := ["azurerm_resource_group", "azurerm_app_service"]
     resource_type := resource_types[_]
     input.resource[resource_type][name]

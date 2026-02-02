@@ -8,28 +8,28 @@ import future.keywords.if
 import future.keywords.in
 
 # Deny public access to storage accounts
-deny[msg] {
+deny contains msg if {
     input.resource.azurerm_storage_account[name]
     input.resource.azurerm_storage_account[name].public_network_access_enabled != false
     msg = sprintf("Storage account '%s' should disable public network access", [name])
 }
 
 # Ensure encryption is enabled for SQL databases
-deny[msg] {
+deny contains msg if {
     input.resource.azurerm_mssql_database[name]
     input.resource.azurerm_mssql_database[name].transparent_data_encryption_enabled != true
     msg = sprintf("SQL Database '%s' should have transparent data encryption enabled", [name])
 }
 
 # Check for HTTPS-only enforcement on App Services
-deny[msg] {
+deny contains msg if {
     input.resource.azurerm_app_service[name]
     input.resource.azurerm_app_service[name].https_only != true
     msg = sprintf("App Service '%s' should enforce HTTPS only", [name])
 }
 
 # Ensure minimum TLS version is set
-warn[msg] {
+warn contains msg if {
     input.resource.azurerm_app_service[name]
     site_config := input.resource.azurerm_app_service[name].site_config[_]
     not site_config.min_tls_version
@@ -37,14 +37,14 @@ warn[msg] {
 }
 
 # Ensure Container Registry has admin account disabled
-warn[msg] {
+warn contains msg if {
     input.resource.azurerm_container_registry[name]
     input.resource.azurerm_container_registry[name].admin_enabled == true
     msg = sprintf("Container Registry '%s' should have admin account disabled for production", [name])
 }
 
 # Check for network security group rules
-warn[msg] {
+warn contains msg if {
     input.resource.azurerm_network_security_rule[name]
     rule := input.resource.azurerm_network_security_rule[name]
     rule.access == "Allow"
@@ -55,7 +55,7 @@ warn[msg] {
 
 # Ensure Key Vault has soft delete retention configured
 # Note: In azurerm provider v3.0+, soft delete is enabled by default
-warn[msg] {
+warn contains msg if {
     input.resource.azurerm_key_vault[name]
     not input.resource.azurerm_key_vault[name].soft_delete_retention_days
     msg = sprintf("Key Vault '%s' should specify soft_delete_retention_days (recommended: 90)", [name])
