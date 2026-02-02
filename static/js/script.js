@@ -375,18 +375,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const div = document.createElement('div');
         div.className = `message ${type}`;
         
-        // Convert URLs to clickable links
-        const urlPattern = /(https?:\/\/[^\s]+)|(\/[^\s]+)/g;
+        // Convert URLs to clickable links - match http/https URLs and valid relative paths
+        const urlPattern = /(https?:\/\/[^\s]+)|(\/[a-zA-Z0-9\-_\/]+)/g;
         const parts = text.split(urlPattern).filter(Boolean);
         
         parts.forEach(part => {
-            if (part && (part.startsWith('http://') || part.startsWith('https://') || part.startsWith('/'))) {
+            if (part && (part.startsWith('http://') || part.startsWith('https://') || (part.startsWith('/') && /^\/[a-zA-Z0-9\-_\/]+$/.test(part)))) {
                 const link = document.createElement('a');
                 link.href = part;
                 link.textContent = part;
                 link.target = '_blank';
                 link.rel = 'noopener noreferrer';
-                link.style.color = type === 'ai' ? '#c0392b' : '#ffffff';
+                link.setAttribute('aria-label', part + ' (opens in new tab)');
+                link.style.color = type === 'ai' ? '#c0392b' : '#e74c3c';
                 link.style.textDecoration = 'underline';
                 link.style.fontWeight = '500';
                 div.appendChild(link);
