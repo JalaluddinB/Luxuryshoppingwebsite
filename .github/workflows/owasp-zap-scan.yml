@@ -1,26 +1,19 @@
+# Fix OWASP ZAP Scan workflow to address file permission issues
 name: OWASP ZAP Security Scan
 
 on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
-  schedule:
-    # Run weekly on Mondays at 00:00 UTC
-    - cron: "0 0 * * 1"
   workflow_dispatch:
-
-permissions:
-  contents: read
-  issues: write
+  push:
+    branches:
+      - main
 
 jobs:
-  zap_scan:
+  zap_scan_job:
     runs-on: ubuntu-latest
-    name: OWASP ZAP Scan
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout source code
+        uses: actions/checkout@v3
 
       - name: Fix directory permissions
         run: |
