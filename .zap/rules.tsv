@@ -1,0 +1,8 @@
+# ZAP Scanning Rules
+# Use the scan rule configuration file to ignore example ascan rules
+#
+# Format (TAB-separated values):
+# scanRuleId[TAB]IGNORE[TAB]URL
+# Example: 10011[TAB]IGNORE[TAB]http://example.com/some/path/
+
+# Ignore false positives or known issues here
