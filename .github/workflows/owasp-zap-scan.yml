@@ -25,13 +25,10 @@ jobs:
 
       - name: Fix directory permissions
         run: |
-          # Pre-create report files first
-          touch report_json.json report_md.md report_html.html
-          chmod 644 report_json.json report_md.md report_html.html
-          # Ensure workspace directory is writable by Docker
-          # The ZAP Docker container runs as user 1000, so we need to make
-          # the workspace accessible to that user
-          sudo chown -R 1000:1000 ${{ github.workspace }}
+          # Make workspace writable by Docker container
+          # The ZAP Docker container runs as user 1000 and needs write access
+          # to create zap.yaml and other output files in the workspace
+          chmod -R 777 ${{ github.workspace }}
 
       - name: ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.12.0
