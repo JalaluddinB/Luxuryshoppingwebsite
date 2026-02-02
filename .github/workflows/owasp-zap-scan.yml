@@ -25,9 +25,10 @@ jobs:
 
       - name: Fix directory permissions
         run: |
-          # Ensure workspace directory has proper write permissions
-          # The GitHub Actions runner needs write access for the ZAP action
-          chmod -R u+rwX ${{ github.workspace }}
+          # Ensure workspace directory has write permissions for Docker container
+          # The ZAP action runs as the runner, then Docker container runs as user 1000
+          # We need to allow both users to write to the workspace
+          chmod -R a+w ${{ github.workspace }}
 
       - name: ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.12.0
