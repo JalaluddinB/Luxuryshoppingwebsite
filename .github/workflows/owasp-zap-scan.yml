@@ -16,7 +16,7 @@ permissions:
   issues: write
 
 jobs:
-  zap_scan:
+  zap-scan:
     runs-on: ubuntu-latest
     name: OWASP ZAP Scan
     steps:
