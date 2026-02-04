@@ -21,6 +21,10 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <form class="d-flex me-3 order-lg-1" action="{{ url_for('search') }}" method="GET" role="search">
+                <input class="form-control me-2" type="search" name="q" placeholder="Search..." aria-label="Search" style="min-width: 200px;" maxlength="200" value="{{ request.args.get('q', '') }}">
+                <button class="btn btn-outline-light" type="submit" aria-label="Search"><i class="fas fa-search"></i></button>
+            </form>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
@@ -45,10 +49,6 @@
                     </li>
                     {% endif %}
                 </ul>
-                <form class="d-flex me-3" action="{{ url_for('search') }}" method="GET" role="search">
-                    <input class="form-control me-2" type="search" name="q" placeholder="Search for products..." aria-label="Search" style="min-width: 250px;" maxlength="200" value="{{ request.args.get('q', '') }}">
-                    <button class="btn btn-outline-light" type="submit" aria-label="Search"><i class="fas fa-search"></i></button>
-                </form>
                 <ul class="navbar-nav">
                     {% if session.user_id %}
                         <li class="nav-item dropdown">

@@ -207,19 +207,8 @@ def get_products():
 
 @app.route('/')
 def index():
-    # Only get unique categories first
-    categories = [row[0] for row in db.session.query(Product.category).distinct().all()]
-    
-    # Get first 6 products for each category
-    categorized_products = {}
-    for cat in categories:
-        products = Product.query.filter_by(category=cat).limit(6).all()
-        categorized_products[cat] = {
-            'products_list': products,
-            'has_more': Product.query.filter_by(category=cat).count() > 6
-        }
-        
-    return render_template('index.html', categorized_products=categorized_products)
+    products = Product.query.all()
+    return render_template('index.html', products=products)
 
 @app.route('/lux-advisor')
 def lux_welcome():
