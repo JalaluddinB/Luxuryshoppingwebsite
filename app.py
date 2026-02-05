@@ -32,7 +32,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Security cookie configurations
-app.config['SESSION_COOKIE_SECURE'] = True
+# Only enforce secure cookies in production (when not using local DB)
+app.config['SESSION_COOKIE_SECURE'] = not use_local_db
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
@@ -44,12 +45,14 @@ db = SQLAlchemy(app)
 def add_security_headers(response):
     """Add security headers to all responses"""
     # Content Security Policy
+    # Note: 'unsafe-inline' is used for compatibility with existing inline scripts/styles
+    # TODO: Refactor inline scripts to external files for stronger XSS protection
     csp_directives = [
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
         "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com",
         "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com",
-        "img-src 'self' data: https: http:",
+        "img-src 'self' data: https:",
         "connect-src 'self'",
         "frame-ancestors 'self'"
     ]
