@@ -387,6 +387,47 @@ def remove_from_cart(cart_id):
     
     return redirect(url_for('cart'))
 
+@app.route('/api/add_to_cart_by_name', methods=['POST'])
+def add_to_cart_by_name():
+    """API endpoint for Lux to add items to cart by product name"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'User not logged in'}), 401
+    
+    data = request.json
+    product_name = data.get('product_name')
+    
+    if not product_name:
+        return jsonify({'success': False, 'error': 'No product name provided'}), 400
+    
+    # Find product by name (case-insensitive)
+    product = Product.query.filter(Product.name.ilike(product_name)).first()
+    
+    if not product:
+        return jsonify({'success': False, 'error': f'Product "{product_name}" not found'}), 404
+    
+    if product.stock <= 0:
+        return jsonify({'success': False, 'error': f'"{product.name}" is out of stock'}), 400
+    
+    # Check if product is already in cart
+    cart_item = Cart.query.filter_by(user_id=session['user_id'], product_id=product.id).first()
+    
+    if cart_item:
+        if cart_item.quantity + 1 > product.stock:
+            return jsonify({'success': False, 'error': f'Only {product.stock} left in stock for "{product.name}"'}), 400
+        cart_item.quantity += 1
+    else:
+        cart_item = Cart(user_id=session['user_id'], product_id=product.id, quantity=1)
+        db.session.add(cart_item)
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True, 
+        'message': f'"{product.name}" has been added to your cart',
+        'product_name': product.name,
+        'product_id': product.id
+    })
+
 @app.route('/checkout')
 def checkout():
     if 'user_id' not in session:
@@ -801,12 +842,28 @@ def ask_advisor():
                     history_lines.append(f"Lux: {content_preview}")
             history_context = "\nRECENT CONVERSATION:\n" + "\n".join(history_lines) + "\n"
         
+        # Check if user is logged in for cart automation capability
+        user_logged_in = 'user_id' in session
+        cart_instruction = ""
+        if user_logged_in:
+            cart_instruction = (
+                "CART AUTOMATION:\n"
+                "- When a customer asks you to add an item to their cart, you can do it!\n"
+                "- To add an item to cart, include the exact product name in this special format at the END of your response:\n"
+                "  [ADD_TO_CART: Product Name]\n"
+                "- Only use this when the customer explicitly requests to add something to cart\n"
+                "- Examples: 'add this to my cart', 'I'll take it', 'add the watch', 'put it in my cart'\n"
+                "- Always confirm the action in your response before the special tag\n"
+                "- Only add ONE item per response - the one the customer most recently requested\n\n"
+            )
+        
         system_prompt = (
             "You are Lux, the sophisticated AI concierge for an exclusive luxury shopping experience. "
             "You speak with elegance, warmth, and genuine expertise about luxury goods. "
             "Your tone is refined yet approachable - like a trusted advisor at a high-end boutique.\n\n"
             f"OUR CURRENT COLLECTION:\n{product_context}\n\n"
             f"{history_context}"
+            f"{cart_instruction}"
             "CONVERSATION STYLE:\n"
             "- Be warm and engaging, but keep responses BRIEF (under 80 words)\n"
             "- Reference previous conversation when relevant to show continuity\n"
