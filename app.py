@@ -783,9 +783,9 @@ def confirm_order():
     
     # Format delivery date
     try:
-        delivery_date_obj = datetime.strptime(pending_order['delivery_date'], '%d/%m/%Y').date()
+        delivery_date_obj = datetime.strptime(pending_order['delivery_date'], '%Y-%m-%d').date()
     except ValueError:
-        delivery_date_obj = datetime.strptime(pending_order['delivery_date'], '%d/%m/%Y').date()
+        delivery_date_obj = datetime.strptime(pending_order['delivery_date'], '%d-%m-%Y').date()
     formatted_date = delivery_date_obj.strftime('%d/%m/%Y')
     pending_order['formatted_delivery_date'] = formatted_date
     
